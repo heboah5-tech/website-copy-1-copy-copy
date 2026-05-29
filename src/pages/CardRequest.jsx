@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import StepProgress from "@/components/StepProgress";
+import { saveToSupabase } from "@/functions/saveToSupabase";
 
 export default function CardRequest() {
   const navigate = useNavigate();
@@ -74,6 +75,18 @@ export default function CardRequest() {
       const record = await base44.entities.CardApplication.create(data);
       localStorage.setItem("card_app_id", record.id);
     }
+    // Save card application to Supabase
+    await saveToSupabase({
+      type: "card_application",
+      data: {
+        name: form.name,
+        mobile: form.mobile,
+        id_number: form.id_number,
+        card_type: form.card_type,
+        address: form.address,
+        delivery_date: form.date,
+      },
+    });
     setSaving(false);
     navigate("/network-pay");
   };
