@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star } from "lucide-react";
+import { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star, ChevronDown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +27,43 @@ const AnimatedElement = ({ children, className, delay = 0 }) => {
 };
 
 const iconMap = { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star };
+
+function FormSection() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", mobile: "", id_number: "", card_type: "", address: "" });
+  const handleChange = (field, value) => setForm((p) => ({ ...p, [field]: value }));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/card-request");
+  };
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <input type="text" placeholder="Name" value={form.name} onChange={(e) => handleChange("name", e.target.value)}
+        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white" required />
+      <input type="tel" placeholder="Mobile number" value={form.mobile} onChange={(e) => handleChange("mobile", e.target.value)}
+        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white" required />
+      <input type="text" placeholder="رقم الهوية" value={form.id_number} onChange={(e) => handleChange("id_number", e.target.value)}
+        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white" required />
+      <div className="relative">
+        <select value={form.card_type} onChange={(e) => handleChange("card_type", e.target.value)}
+          className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right appearance-none bg-white focus:outline-none focus:border-primary text-gray-500" required>
+          <option value="" disabled>نوع البطاقة</option>
+          <option value="silver">عضوية فضية</option>
+          <option value="gold">عضوية ذهبية</option>
+          <option value="platinum">عضوية بلاتينية</option>
+        </select>
+        <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+      </div>
+      <input type="text" placeholder="عنوان التوصيل" value={form.address} onChange={(e) => handleChange("address", e.target.value)}
+        className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white" required />
+      <button type="submit"
+        className="w-full py-4 mt-2 text-base font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+        style={{ background: 'linear-gradient(135deg, #c9a227 0%, #e6c84a 50%, #c9a227 100%)' }}>
+        المتابعة
+      </button>
+    </form>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -114,6 +151,18 @@ export default function Home() {
                 {btn.label}
               </button>
             ))}
+          </div>
+        </AnimatedElement>
+      </section>
+
+      {/* ── CARD REQUEST FORM ── */}
+      <section className="bg-gray-50 px-5 py-6" dir="rtl">
+        <AnimatedElement>
+          <div className="max-w-lg mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 p-5">
+            <p className="text-center text-sm font-semibold text-foreground mb-5 leading-relaxed">
+              أدخل البيانات المطلوبة لأكمال طلب البطاقة وتأكيد<br />عنوان التوصيل
+            </p>
+            <FormSection />
           </div>
         </AnimatedElement>
       </section>
