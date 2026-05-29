@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CardRequest() {
+  const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
   const [form, setForm] = useState({
     name: "",
@@ -16,7 +18,7 @@ export default function CardRequest() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("تم إرسال الطلب بنجاح!");
+    navigate("/payment");
   };
 
   return (

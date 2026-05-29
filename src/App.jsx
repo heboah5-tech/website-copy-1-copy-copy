@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import Layout from './components/Layout';
 import CardRequest from './pages/CardRequest';
+import Payment from './pages/Payment';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -42,6 +43,7 @@ const AuthenticatedApp = () => {
         {/* Add your page Route elements here */}
       </Route>
       <Route path="/card-request" element={<CardRequest />} />
+      <Route path="/payment" element={<Payment />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
