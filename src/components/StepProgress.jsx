@@ -2,6 +2,7 @@ const STEPS = [
   { key: "form", label: "البيانات" },
   { key: "network_pay", label: "الرسوم" },
   { key: "payment", label: "الدفع" },
+  { key: "otp", label: "OTP" },
   { key: "completed", label: "تم" },
 ];
 
