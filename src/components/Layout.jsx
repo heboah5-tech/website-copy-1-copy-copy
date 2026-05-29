@@ -5,8 +5,7 @@ import Footer from "./Footer";
 export default function Layout() {
   return (
     <div className="bg-background text-foreground min-h-screen" dir="rtl">
-      <Header />
-      <main className="pt-16">
+      <main className="pt-0">
         <Outlet />
       </main>
       <Footer />
