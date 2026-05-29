@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "name_ar": {
+      "type": "string"
+    },
+    "name_en": {
+      "type": "string"
+    },
+    "description_ar": {
+      "type": "string"
+    },
+    "eligibility_ar": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "tier_level": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "MembershipTier",
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
