@@ -31,11 +31,11 @@ export default function NetworkPay() {
 
       {/* Network Pay Logo */}
       <div className="mb-8 mt-6">
-        <span className="text-4xl font-black" style={{ letterSpacing: "-1px" }}>
-          <span style={{ color: "#e63946" }}>network</span>
-          <span style={{ color: "#1a1a1a" }}>pay </span>
-          <span style={{ color: "#e63946", fontSize: "2.5rem" }}>›</span>
-        </span>
+        <img
+          src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/7b65a1fdb_2f3eb4_5549add76f694127877610465c9f8733mv2.jpeg"
+          alt="Network Pay"
+          className="h-14 object-contain"
+        />
       </div>
 
       {/* Title Button */}
@@ -72,17 +72,11 @@ export default function NetworkPay() {
       <div className="w-full max-w-sm mb-6">
         <div className="border border-gray-200 rounded-2xl px-4 py-3 flex items-center gap-3 bg-white">
           <span className="text-sm font-bold text-gray-700 shrink-0">الدفع عبر البطاقة</span>
-          <div className="flex gap-2 items-center flex-wrap">
-            <div className="bg-blue-700 text-white text-[9px] font-black px-1.5 py-0.5 rounded">AMEX</div>
-            <div className="border border-gray-200 rounded px-1.5 py-0.5">
-              <span className="text-blue-700 font-black text-[10px]">VISA</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-500 rounded-full -mr-1.5" />
-              <div className="w-4 h-4 bg-yellow-400 rounded-full opacity-90" />
-            </div>
-            <div className="bg-green-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">mada</div>
-          </div>
+          <img
+            src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/7d9ca8966_cards.png"
+            alt="Visa, Mastercard, Amex, Mada"
+            className="h-8 object-contain"
+          />
         </div>
       </div>
 
