@@ -141,15 +141,13 @@ export default function Payment() {
         </div>
 
         {/* Accepted Cards */}
-        <div className="flex items-center justify-center gap-3 mt-5">
+        <div className="flex items-center justify-center gap-2 mt-5">
           <span className="text-xs text-gray-400">نقبل:</span>
-          <div className="flex gap-2">
-            {["VISA", "MC", "AMEX"].map((card) => (
-              <span key={card} className="text-xs font-bold border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-500">
-                {card}
-              </span>
-            ))}
-          </div>
+          <img
+            src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/2a8d24b81_cards.png"
+            alt="Visa, Mastercard, Amex, Mada"
+            className="h-8 object-contain"
+          />
         </div>
       </div>
     </div>
