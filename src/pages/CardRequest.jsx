@@ -20,7 +20,7 @@ export default function CardRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col" dir="rtl">
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-y-auto" dir="rtl">
       {/* Top cards banner */}
       <div className="bg-white flex flex-col items-center pt-6 pb-0">
         <img

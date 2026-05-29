@@ -38,9 +38,10 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Register" element={<Register />} />
-        <Route path="/card-request" element={<CardRequest />} />
+
         {/* Add your page Route elements here */}
       </Route>
+      <Route path="/card-request" element={<CardRequest />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
