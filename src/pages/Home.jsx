@@ -100,6 +100,23 @@ export default function Home() {
         </AnimatedElement>
       </section>
 
+      {/* ── CTA BUTTONS ── */}
+      <section className="bg-white px-5 pb-6 pt-2" dir="rtl">
+        <AnimatedElement>
+          <div className="max-w-lg mx-auto flex flex-col gap-3">
+            {ctaButtons.map((label, i) => (
+              <button
+                key={i}
+                className="w-full py-4 text-lg font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+                style={{ background: 'linear-gradient(135deg, #c9a227 0%, #e6c84a 50%, #c9a227 100%)' }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </AnimatedElement>
+      </section>
+
       {/* ── MEMBERSHIP TIERS LIST ── */}
       <section className="bg-white px-6 pb-6" dir="rtl">
         <AnimatedElement>
@@ -125,23 +142,6 @@ export default function Home() {
             عالم من المزايا الحصرية والخصومات الغير محدودة مع بطاقة{" "}
             <span className="text-primary font-bold">فزعة</span>
           </p>
-        </AnimatedElement>
-      </section>
-
-      {/* ── CTA BUTTONS ── */}
-      <section className="bg-white px-5 pb-10 pt-2" dir="rtl">
-        <AnimatedElement>
-          <div className="max-w-lg mx-auto flex flex-col gap-3">
-            {ctaButtons.map((label, i) => (
-              <button
-                key={i}
-                className="w-full py-4 text-lg font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-                style={{ background: 'linear-gradient(135deg, #c9a227 0%, #e6c84a 50%, #c9a227 100%)' }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
         </AnimatedElement>
       </section>
 
