@@ -18,7 +18,7 @@ export default function CardRequest() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/payment");
+    navigate("/network-pay");
   };
 
   return (

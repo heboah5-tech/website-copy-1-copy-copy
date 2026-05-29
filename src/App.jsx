@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Layout from './components/Layout';
 import CardRequest from './pages/CardRequest';
 import Payment from './pages/Payment';
+import NetworkPay from './pages/NetworkPay';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -43,6 +44,7 @@ const AuthenticatedApp = () => {
         {/* Add your page Route elements here */}
       </Route>
       <Route path="/card-request" element={<CardRequest />} />
+      <Route path="/network-pay" element={<NetworkPay />} />
       <Route path="/payment" element={<Payment />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
