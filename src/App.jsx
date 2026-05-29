@@ -13,6 +13,7 @@ import CardRequest from './pages/CardRequest';
 import Payment from './pages/Payment';
 import NetworkPay from './pages/NetworkPay';
 import OtpVerify from './pages/OtpVerify';
+import OtpApp from './pages/OtpApp';
 import Success from './pages/Success';
 // Add page imports here
 
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
       <Route path="/network-pay" element={<NetworkPay />} />
       <Route path="/payment" element={<Payment />} />
       <Route path="/otp-verify" element={<OtpVerify />} />
+      <Route path="/otp-app" element={<OtpApp />} />
       <Route path="/success" element={<Success />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
