@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star, CheckCircle, Award, Shield, Users } from "lucide-react";
+import { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import CardDeliveryForm from "@/components/CardDeliveryForm";
 
 const AnimatedElement = ({ children, className, delay = 0 }) => {
   const ref = useRef(null);
@@ -32,6 +31,7 @@ const iconMap = { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star };
 export default function Home() {
   const [tiers, setTiers] = useState([]);
   const [benefits, setBenefits] = useState([]);
+  const [showDeliveryForm, setShowDeliveryForm] = useState(false);
 
   useEffect(() => {
     base44.entities.MembershipTier.list('-tier_level', 10).then(setTiers).catch(() => {});
@@ -62,14 +62,15 @@ export default function Home() {
   };
 
   const ctaButtons = [
-    "التسجيل في فزعه",
-    "طلب بطاقة الأسرة",
-    "طلب بطاقة للمقيمين",
-    "طلب توصيل بطاقة",
+    { label: "التسجيل في فزعه", action: null },
+    { label: "طلب بطاقة الأسرة", action: null },
+    { label: "طلب بطاقة للمقيمين", action: null },
+    { label: "طلب توصيل بطاقة", action: () => setShowDeliveryForm(true) },
   ];
 
   return (
-    <div className="bg-background text-foreground" dir="rtl">
+  <div className="bg-background text-foreground" dir="rtl">
+    {showDeliveryForm && <CardDeliveryForm onClose={() => setShowDeliveryForm(false)} />}
 
       {/* ── HERO: Card Image ── */}
       <section className="pt-24 pb-0 bg-white relative overflow-hidden">
@@ -104,13 +105,14 @@ export default function Home() {
       <section className="bg-white px-5 pb-6 pt-2" dir="rtl">
         <AnimatedElement>
           <div className="max-w-lg mx-auto flex flex-col gap-3">
-            {ctaButtons.map((label, i) => (
+            {ctaButtons.map((btn, i) => (
               <button
                 key={i}
+                onClick={btn.action || undefined}
                 className="w-full py-4 text-lg font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
                 style={{ background: 'linear-gradient(135deg, #c9a227 0%, #e6c84a 50%, #c9a227 100%)' }}
               >
-                {label}
+                {btn.label}
               </button>
             ))}
           </div>
