@@ -105,9 +105,9 @@ export default function CardRequest() {
       {/* Bottom banner */}
       <div className="bg-white flex flex-col items-center py-6 mt-auto">
         <img
-          src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/fb31ff7e9_static_wixstatic_com_1_4c363b09.jpg"
-          alt="بطاقات فزعة"
-          className="w-full max-w-sm object-contain mb-3"
+          src="https://media.base44.com/images/public/6a1908e5cd52b6a8fe5b8021/e799bc032_2f3eb4_5549add76f694127877610465c9f8733mv2.jpeg"
+          alt="Network Pay"
+          className="w-48 object-contain mb-3"
         />
         <p className="text-xs text-gray-500 text-center">Fazaa... a lifestyle of happiness & positivity</p>
         <p className="text-xs text-primary text-center">www.fazaa.ae</p>
