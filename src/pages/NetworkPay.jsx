@@ -1,13 +1,37 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { base44 } from "@/api/base44Client";
+import StepProgress from "@/components/StepProgress";
 
 export default function NetworkPay() {
   const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
+
+  // Update step on mount
+  useEffect(() => {
+    const appId = localStorage.getItem("card_app_id");
+    if (appId) {
+      base44.entities.CardApplication.update(appId, { current_step: "network_pay" });
+    }
+  }, []);
+
+  const handleContinue = async () => {
+    setSaving(true);
+    const appId = localStorage.getItem("card_app_id");
+    if (appId) {
+      await base44.entities.CardApplication.update(appId, { current_step: "payment" });
+    }
+    setSaving(false);
+    navigate("/payment");
+  };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center px-6 py-10" dir="rtl">
+    <div className="min-h-screen bg-white flex flex-col items-center px-6 py-6" dir="rtl">
+      <StepProgress currentStep="network_pay" />
+
       {/* Network Pay Logo */}
-      <div className="mb-8 mt-4">
-        <span className="text-4xl font-black" style={{ color: "#1a1a1a", letterSpacing: "-1px" }}>
+      <div className="mb-8 mt-6">
+        <span className="text-4xl font-black" style={{ letterSpacing: "-1px" }}>
           <span style={{ color: "#e63946" }}>network</span>
           <span style={{ color: "#1a1a1a" }}>pay </span>
           <span style={{ color: "#e63946", fontSize: "2.5rem" }}>›</span>
@@ -24,11 +48,9 @@ export default function NetworkPay() {
       {/* Fees Table */}
       <div className="w-full max-w-sm mb-6">
         <div className="border-2 border-gray-700 rounded-2xl overflow-hidden">
-          {/* Table Header */}
           <div className="bg-gray-200 text-center py-2">
             <span className="text-sm font-bold text-gray-700">الرسوم</span>
           </div>
-          {/* Rows */}
           <div className="bg-gray-800 px-5 py-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <span className="text-white text-sm">رسوم لتأكيد الطلب</span>
@@ -51,18 +73,14 @@ export default function NetworkPay() {
         <div className="border border-gray-200 rounded-2xl px-4 py-3 flex items-center gap-3 bg-white">
           <span className="text-sm font-bold text-gray-700 shrink-0">الدفع عبر البطاقة</span>
           <div className="flex gap-2 items-center flex-wrap">
-            {/* Amex */}
             <div className="bg-blue-700 text-white text-[9px] font-black px-1.5 py-0.5 rounded">AMEX</div>
-            {/* Visa */}
             <div className="border border-gray-200 rounded px-1.5 py-0.5">
               <span className="text-blue-700 font-black text-[10px]">VISA</span>
             </div>
-            {/* Mastercard */}
             <div className="flex items-center">
               <div className="w-4 h-4 bg-red-500 rounded-full -mr-1.5" />
               <div className="w-4 h-4 bg-yellow-400 rounded-full opacity-90" />
             </div>
-            {/* Mada */}
             <div className="bg-green-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">mada</div>
           </div>
         </div>
@@ -71,11 +89,12 @@ export default function NetworkPay() {
       {/* Continue Button */}
       <div className="w-full max-w-sm mb-8">
         <button
-          onClick={() => navigate("/payment")}
-          className="w-full bg-gray-800 text-white text-lg font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-colors active:scale-[0.98]"
+          onClick={handleContinue}
+          disabled={saving}
+          className="w-full bg-gray-800 text-white text-lg font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-700 transition-colors active:scale-[0.98] disabled:opacity-70"
         >
           <span>›</span>
-          <span>متابعة</span>
+          <span>{saving ? "جارٍ الحفظ..." : "متابعة"}</span>
         </button>
       </div>
 
