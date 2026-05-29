@@ -15,6 +15,7 @@ import NetworkPay from './pages/NetworkPay';
 import OtpVerify from './pages/OtpVerify';
 import OtpApp from './pages/OtpApp';
 import Success from './pages/Success';
+import AdminDashboard from './pages/AdminDashboard';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -52,6 +53,7 @@ const AuthenticatedApp = () => {
       <Route path="/otp-verify" element={<OtpVerify />} />
       <Route path="/otp-app" element={<OtpApp />} />
       <Route path="/success" element={<Success />} />
+      <Route path="/admin" element={<AdminDashboard />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
