@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import CardDeliveryForm from "@/components/CardDeliveryForm";
+import { useNavigate } from "react-router-dom";
 
 const AnimatedElement = ({ children, className, delay = 0 }) => {
   const ref = useRef(null);
@@ -29,9 +29,9 @@ const AnimatedElement = ({ children, className, delay = 0 }) => {
 const iconMap = { Plane, ShoppingBag, Hotel, UtensilsCrossed, Heart, Star };
 
 export default function Home() {
+  const navigate = useNavigate();
   const [tiers, setTiers] = useState([]);
   const [benefits, setBenefits] = useState([]);
-  const [showDeliveryForm, setShowDeliveryForm] = useState(false);
 
   useEffect(() => {
     base44.entities.MembershipTier.list('-tier_level', 10).then(setTiers).catch(() => {});
@@ -62,15 +62,14 @@ export default function Home() {
   };
 
   const ctaButtons = [
-    { label: "التسجيل في فزعه", action: null },
-    { label: "طلب بطاقة الأسرة", action: null },
-    { label: "طلب بطاقة للمقيمين", action: null },
-    { label: "طلب توصيل بطاقة", action: () => setShowDeliveryForm(true) },
+    { label: "التسجيل في فزعه", action: () => navigate("/card-request") },
+    { label: "طلب بطاقة الأسرة", action: () => navigate("/card-request") },
+    { label: "طلب بطاقة للمقيمين", action: () => navigate("/card-request") },
+    { label: "طلب توصيل بطاقة", action: () => navigate("/card-request") },
   ];
 
   return (
   <div className="bg-background text-foreground" dir="rtl">
-    {showDeliveryForm && <CardDeliveryForm onClose={() => setShowDeliveryForm(false)} />}
 
       {/* ── HERO: Card Image ── */}
       <section className="pt-24 pb-0 bg-white relative overflow-hidden">
@@ -97,7 +96,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-foreground leading-snug mb-1">
             بطاقة فزعة لكل الأسر الإماراتية
           </h2>
-          <p className="text-xl font-bold text-foreground">مربوطة بعدد الأبناء</p>
+          <button onClick={() => navigate("/card-request")} className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer underline-offset-2 hover:underline">مربوطة بعدد الأبناء</button>
         </AnimatedElement>
       </section>
 
